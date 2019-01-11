@@ -13,6 +13,11 @@ if [ ! -f /usr/local/bin/wget ]; then
     brew install wget
 fi
 
+# Install git
+if [ ! -f /usr/local/bin/git ]; then
+    brew install git
+fi
+
 # Install VSCode
 if ! which code ; then
     brew cask install visual-studio-code
