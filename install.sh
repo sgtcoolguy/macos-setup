@@ -24,10 +24,10 @@ if ! which code ; then
 fi
 
 # Set up git
-echo Hello, what is your full name (i.e. John Doe)?
+echo "Hello, what is your full name (i.e. John Doe)?"
 read fullname
 git config --global user.name "$fullname"
-echo What is your verified email address asociated with Github?
+echo "What is your verified email address asociated with Github?"
 read email
 git config --global user.email "$email"
 # Set VSCode as git's editor
@@ -77,7 +77,7 @@ chmod 700 ~/.gnupg
 
 key_id=$(gpg -K --keyid-format SHORT | grep 'sec' | cut -d ' ' -f4 | cut -d '/' -f2)
 gpg --armor --export $key_id > gpg-key.txt
-echo Go to https://github.com/settings/keys to upload contents of $pwd/gpg-key.txt
+echo "Go to https://github.com/settings/keys to upload contents of $pwd/gpg-key.txt"
 # Tell git to sign and how
 git config --global gpg.program gpg
 git config --global commit.gpgsign true
