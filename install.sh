@@ -56,12 +56,12 @@ if [ ! -f /usr/local/bin/gpg ]; then
     git config --global gpg.program gpg
 fi
 # make home dir
-if [ ! -f ~/.gnupg ]; then
-    mkdir ~/.gnupg
+if [ ! -f $HOME/.gnupg ]; then
+    mkdir $HOME/.gnupg
 fi
 # create agent config
-if [ ! -f ~/.gnupg/gpg-agent.conf ]; then
-    cat >~/.gnupg/gpg-agent.conf <<EOF
+if [ ! -f $HOME/.gnupg/gpg-agent.conf ]; then
+    cat >$HOME/.gnupg/gpg-agent.conf <<EOF
 default-cache-ttl 3600
 
 # Connects gpg-agent to the OSX keychain via the brew-installed
@@ -72,29 +72,29 @@ pinentry-program /usr/local/bin/pinentry-mac
 EOF
 fi
 # create gpg config
-if [ ! -f ~/.gnupg/gpg.conf ]; then
-    cat >~/.gnupg/gpg.conf <<EOF
+if [ ! -f $HOME/.gnupg/gpg.conf ]; then
+    cat >$HOME/.gnupg/gpg.conf <<EOF
 use-agent
 keyserver hkp://keys.gnupg.net
 EOF
 fi
 # fix permissions on the folder
-chmod 700 ~/.gnupg
+chmod 700 $HOME/.gnupg
 
 # Set up tty for gpg
-if [[ ! -v GPG_TTY ]] then
+if [ "$GPG_TTY" = "" ] then
     export GPG_TTY="tty"
 
     # TODO: Look at SHELL env var to choose?
-    if [ -f ~/.zshrc ]; then
-        echo '\nexport GPG_TTY="tty"\n' >> ~/.zshrc
-    elif [ -f ~/.bashrc ]; then
-        echo '\nexport GPG_TTY="tty"\n' >> ~/.bashrc
+    if [ -f $HOME/.zshrc ]; then
+        echo '\nexport GPG_TTY="tty"\n' >> $HOME/.zshrc
+    elif [ -f $HOME/.bashrc ]; then
+        echo '\nexport GPG_TTY="tty"\n' >> $HOME/.bashrc
     fi
 fi
 
 # Generate key
-if [ ! -f ~/.gnupg/pubring.kbx ]; then
+if [ ! -f $HOME/.gnupg/pubring.kbx ]; then
     cat >gen-key-script <<EOF
 Key-Type: 1
 Key-Length: 4096
