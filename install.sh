@@ -119,7 +119,7 @@ if [ $RESULT -ne 0 ]; then
 fi
 
 gpg --armor --export $key_id > gpg-key.txt
-echo "\x1B[31m---> Go to \x1B[4m\x1B[34mhttps://github.com/settings/keys\x1B[0m, \x1B[1mNew GPG Key\x1B[0m and paste contents of \x1B[92m$PWD/gpg-key.txt"
+echo "\x1B[31m---> Go to \x1B[4m\x1B[34mhttps://github.com/settings/keys\x1B[0m, \x1B[1mNew GPG Key\x1B[0m and paste contents of \x1B[92m$PWD/gpg-key.txt\x1B[0m"
 # Tell git to sign and what key to use
 git config --global commit.gpgsign true
 
