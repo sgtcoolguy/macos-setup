@@ -23,13 +23,25 @@ if ! which code ; then
     brew cask install visual-studio-code
 fi
 
+# Grab user's full name for git/gpg
+fullname=$(id -F)
+
 # Set up git
-echo "Hello, what is your full name (i.e. John Doe)?"
-read fullname
-git config --global user.name "$fullname"
-echo "What is your verified email address asociated with Github?"
-read email
-git config --global user.email "$email"
+git_user_name=$(git config --global --get user.name)
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  git_user_name=$fullname
+  git config --global user.name "$fullname"
+fi
+
+git_email=$(git config --global --get user.email)
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  echo "What is your verified email address asociated with Github?"
+  read git_email
+  git config --global user.email "$git_email"
+fi
+
 # Set VSCode as git's editor
 git config --global core.editor "code --wait"
 
@@ -89,20 +101,26 @@ Key-Length: 4096
 Subkey-Type: 1
 Subkey-Length: 4096
 Name-Real: $fullname
-Name-Email: $email
+Name-Email: $git_email
 Expire-Date: 0
 EOF
     gpg --batch --gen-key gen-key-script
+    rm gen-key-script
 fi
 
-# Grab key id
-# TODO: Guard by checking if git config value for user.signkey is already set?
-key_id=$(gpg -K --keyid-format SHORT | grep 'sec' | cut -d ' ' -f4 | cut -d '/' -f2)
+# Grab key id (use existing one in git config if set)
+key_id=$(git config --global --get user.signingkey)
+RESULT=$?
+if [ $RESULT -ne 0 ]; then
+  key_id=$(gpg -K --keyid-format SHORT | grep 'sec' | cut -d ' ' -f4 | cut -d '/' -f2)
+  git config --global user.signingkey $key_id
+fi
+
 gpg --armor --export $key_id > gpg-key.txt
 echo "\e[31m---> Go to \e[4m\e[34mhttps://github.com/settings/keys\e[0m, \e[1mNew GPG Key\e[0m and paste contents of \e[92m$PWD/gpg-key.txt"
 # Tell git to sign and what key to use
 git config --global commit.gpgsign true
-git config --global user.signingkey $key_id
+
 # start gpg-agent
 #gpg-agent --daemon # should already be running
 
