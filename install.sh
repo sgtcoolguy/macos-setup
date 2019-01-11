@@ -82,7 +82,7 @@ fi
 chmod 700 $HOME/.gnupg
 
 # Set up tty for gpg
-if [ "$GPG_TTY" = "" ]; then
+if [ "$GPG_TTY" == "" ]; then
     export GPG_TTY="tty"
 
     # TODO: Look at SHELL env var to choose?
