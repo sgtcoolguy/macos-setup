@@ -12,5 +12,14 @@ brew install wget
 # Install VSCode
 brew cask install visual-studio-code
 
-# Install git?
-# gpg?
+# Set up git
+echo Hello, what git username should we use?
+read user
+git config --global user.name "$user"
+echo What git email address should we use?
+read email
+git config --global user.email "$email"
+# Set VSCode as git's editor
+git config --global core.editor "code --wait"
+
+# Set up gpgp for git?
