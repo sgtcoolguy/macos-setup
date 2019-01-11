@@ -56,7 +56,7 @@ if [ ! -f /usr/local/bin/gpg ]; then
     git config --global gpg.program gpg
 fi
 # make home dir
-if [ ! -f $HOME/.gnupg ]; then
+if [ ! -d $HOME/.gnupg ]; then
     mkdir $HOME/.gnupg
 fi
 # create agent config
@@ -82,7 +82,7 @@ fi
 chmod 700 $HOME/.gnupg
 
 # Set up tty for gpg
-if [ "$GPG_TTY" == "" ]; then
+if [ -z "$GPG_TTY" ]; then
     export GPG_TTY="tty"
 
     # TODO: Look at SHELL env var to choose?
@@ -90,6 +90,8 @@ if [ "$GPG_TTY" == "" ]; then
         echo '\nexport GPG_TTY="tty"\n' >> $HOME/.zshrc
     elif [ -f $HOME/.bashrc ]; then
         echo '\nexport GPG_TTY="tty"\n' >> $HOME/.bashrc
+    else
+        echo 'Unknown shell. Please add GPG_TTY="tty" to your shell startup script'
     fi
 fi
 
@@ -117,7 +119,7 @@ if [ $RESULT -ne 0 ]; then
 fi
 
 gpg --armor --export $key_id > gpg-key.txt
-echo "\e[31m---> Go to \e[4m\e[34mhttps://github.com/settings/keys\e[0m, \e[1mNew GPG Key\e[0m and paste contents of \e[92m$PWD/gpg-key.txt"
+echo "\x1B[31m---> Go to \x1B[4m\x1B[34mhttps://github.com/settings/keys\x1B[0m, \x1B[1mNew GPG Key\x1B[0m and paste contents of \x1B[92m$PWD/gpg-key.txt"
 # Tell git to sign and what key to use
 git config --global commit.gpgsign true
 
