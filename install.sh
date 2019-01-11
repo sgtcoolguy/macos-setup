@@ -33,14 +33,23 @@ git config --global user.email "$email"
 # Set VSCode as git's editor
 git config --global core.editor "code --wait"
 
-# Set up gpgp for git?
-# https://gist.github.com/troyfontaine/18c9146295168ee9ca2b30c00bd1b41e
-brew install gnupg pinentry-mac
-mkdir ~/.gnupg
-cat >~/.gnupg/gpg-agent.conf <<EOF
-# Enables GPG to find gpg-agent
-use-standard-socket
+# TODO: Set up SSH keys!
 
+# Set up gpg for git
+# https://gist.github.com/troyfontaine/18c9146295168ee9ca2b30c00bd1b41e
+# install gpg/pinentry
+if [ ! -f /usr/local/bin/gpg ]; then
+    brew install gnupg pinentry-mac
+    # Tell git to use gpg to sign
+    git config --global gpg.program gpg
+fi
+# make home dir
+if [ ! -f ~/.gnupg ]; then
+    mkdir ~/.gnupg
+fi
+# create agent config
+if [ ! -f ~/.gnupg/gpg-agent.conf ]; then
+    cat >~/.gnupg/gpg-agent.conf <<EOF
 default-cache-ttl 3600
 
 # Connects gpg-agent to the OSX keychain via the brew-installed
@@ -49,20 +58,32 @@ default-cache-ttl 3600
 # keychain, enabling automatic key signing.
 pinentry-program /usr/local/bin/pinentry-mac
 EOF
-cat >~/.gnupg/gpg.conf <<EOF
+fi
+# create gpg config
+if [ ! -f ~/.gnupg/gpg.conf ]; then
+    cat >~/.gnupg/gpg.conf <<EOF
 use-agent
 keyserver hkp://keys.gnupg.net
 EOF
+fi
+# fix permissions on the folder
+chmod 700 ~/.gnupg
+
 # Set up tty for gpg
-export GPG_TTY="tty"
-if [ -f ~/.zshrc ]; then
-    echo '\nexport GPG_TTY="tty"\n' >> ~/.zshrc
-elif [ -f ~/.bashrc ]; then
-    echo '\nexport GPG_TTY="tty"\n' >> ~/.bashrc
+if [[ ! -v GPG_TTY ]] then
+    export GPG_TTY="tty"
+
+    # TODO: Look at SHELL env var to choose?
+    if [ -f ~/.zshrc ]; then
+        echo '\nexport GPG_TTY="tty"\n' >> ~/.zshrc
+    elif [ -f ~/.bashrc ]; then
+        echo '\nexport GPG_TTY="tty"\n' >> ~/.bashrc
+    fi
 fi
 
 # Generate key
-cat >gen-key-script <<EOF
+if [ ! -f ~/.gnupg/pubring.kbx ]; then
+    cat >gen-key-script <<EOF
 Key-Type: 1
 Key-Length: 4096
 Subkey-Type: 1
@@ -71,16 +92,21 @@ Name-Real: $fullname
 Name-Email: $email
 Expire-Date: 0
 EOF
-gpg --batch --gen-key gen-key-script
-# fix permissions on the folder
-chmod 700 ~/.gnupg
+    gpg --batch --gen-key gen-key-script
+fi
 
+# Grab key id
+# TODO: Guard by checking if git config value for user.signkey is already set?
 key_id=$(gpg -K --keyid-format SHORT | grep 'sec' | cut -d ' ' -f4 | cut -d '/' -f2)
 gpg --armor --export $key_id > gpg-key.txt
-echo "Go to https://github.com/settings/keys to upload contents of $pwd/gpg-key.txt"
-# Tell git to sign and how
-git config --global gpg.program gpg
+echo "\e[31m---> Go to \e[4m\e[34mhttps://github.com/settings/keys\e[0m, \e[1mNew GPG Key\e[0m and paste contents of \e[92m$PWD/gpg-key.txt"
+# Tell git to sign and what key to use
 git config --global commit.gpgsign true
 git config --global user.signingkey $key_id
 # start gpg-agent
-gpg-agent --daemon
+#gpg-agent --daemon # should already be running
+
+# Install node/npm
+if ! which node ; then
+    brew install node
+fi
