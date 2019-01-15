@@ -150,7 +150,7 @@ if [ ! -d /usr/local/share/android-sdk ]; then
     fi
 
     # Install some components!
-    yes | /usr/local/bin/sdkmanager "build-tools;28.0.2" "emulator" "platforms;android-28" "system-images;android-28;google_apis;x86"
+    yes | /usr/local/bin/sdkmanager "build-tools;28.0.2" "platform-tools" "emulator" "platforms;android-28" "system-images;android-28;google_apis;x86"
     # Set up an emulator
     echo | /usr/local/bin/avdmanager create avd -n "android-28-x86" -k "system-images;android-28;google_apis;x86" -c "512M"
 fi
