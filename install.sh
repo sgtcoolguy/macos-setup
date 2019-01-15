@@ -128,5 +128,45 @@ git config --global commit.gpgsign true
 
 # Install node/npm
 if ! which node ; then
-    brew install node
+    brew install node@8
+    brew link node@8
+fi
+
+# Install Android SDK
+if [ ! -d /usr/local/share/android-sdk ]; then
+    brew cask install android-sdk
+
+    export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"
+    export ANDROID_SDK="/usr/local/share/android-sdk"
+    export ANDROID_HOME="/usr/local/share/android-sdk"
+
+    # TODO: Look at SHELL env var to choose?
+    if [ -f $HOME/.zshrc ]; then
+        echo '\nexport ANDROID_SDK_ROOT="/usr/local/share/android-sdk"\nANDROID_SDK=\$ANDROID_SDK_ROOT\nANDROID_HOME=\$ANDROID_SDK_ROOT\n' >> $HOME/.zshrc
+    elif [ -f $HOME/.bashrc ]; then
+        echo '\nexport ANDROID_SDK_ROOT="/usr/local/share/android-sdk"\nANDROID_SDK=\$ANDROID_SDK_ROOT\nANDROID_HOME=\$ANDROID_SDK_ROOT\n' >> $HOME/.bashrc
+    else
+        echo 'Unknown shell. Please add ANDROID_SDK_ROOT="/usr/local/share/android-sdk\nANDROID_NDK=\$ANDROID_NDK_HOME\nANDROID_HOME=\$ANDROID_SDK_ROOT\n" to your shell startup script'
+    fi
+
+    # Install some components!
+    yes | /usr/local/bin/sdkmanager "build-tools;28.0.2" "emulator" "platforms;android-28" "system-images;android-28;google_apis;x86"
+    # Set up an emulator
+    echo | /usr/local/bin/avdmanager create avd -n "android-28-x86" -k "system-images;android-28;google_apis;x86" -c "512M"
+fi
+
+# Install Android NDK
+if [ ! -d /usr/local/share/android-ndk ]; then
+    brew cask install android-ndk
+    export ANDROID_NDK_HOME="/usr/local/share/android-ndk"
+    export ANDROID_NDK="/usr/local/share/android-ndk"
+
+    # TODO: Look at SHELL env var to choose?
+    if [ -f $HOME/.zshrc ]; then
+        echo '\nexport ANDROID_NDK_HOME="/usr/local/share/android-ndk"\nANDROID_NDK=\$ANDROID_NDK_HOME\n' >> $HOME/.zshrc
+    elif [ -f $HOME/.bashrc ]; then
+        echo '\nexport ANDROID_NDK_HOME="/usr/local/share/android-ndk"\nANDROID_NDK=\$ANDROID_NDK_HOME\n' >> $HOME/.bashrc
+    else
+        echo 'Unknown shell. Please add ANDROID_NDK_HOME="/usr/local/share/android-ndk\nANDROID_NDK=\$ANDROID_NDK_HOME" to your shell startup script'
+    fi
 fi

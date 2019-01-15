@@ -12,6 +12,10 @@ It installs:
 - Git
 - Homebrew
 - GPG
+- Node 8.x / NPM
+- Android SDK (apilevel 28)
+- x86 Android emulator (apilevel 28)
+- Android NDK r18
 - Configures git with:
   - username
   - email
