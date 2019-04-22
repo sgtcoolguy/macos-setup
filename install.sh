@@ -130,8 +130,8 @@ git config --global commit.gpgsign true
 
 # Install node/npm
 if ! which node ; then
-    brew install node@8
-    brew link node@8
+    brew install nvm
+    nvm install 10
 fi
 
 # Install Android SDK
