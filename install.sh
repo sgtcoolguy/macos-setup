@@ -134,6 +134,11 @@ if ! which node ; then
     nvm install 10
 fi
 
+# Install 'hub' cli
+if ! which hub ; then
+    brew install hub
+fi
+
 # Install Android SDK
 if [ ! -d /usr/local/share/android-sdk ]; then
     brew cask install android-sdk
