@@ -16,6 +16,8 @@ fi
 # Install git
 if [ ! -f /usr/local/bin/git ]; then
     brew install git
+    # Have it use the osxkeychain for credentials
+    git config --global credential.helper osxkeychain
 fi
 
 # Install VSCode
