@@ -18,6 +18,10 @@ if [ ! -f /usr/local/bin/git ]; then
     brew install git
     # Have it use the osxkeychain for credentials
     git config --global credential.helper osxkeychain
+    # Automatically rebase on pull instead of generating a merge commit
+    git config --global pull.rebase true
+    # Automatically stash/unstash working changes on rebase
+    git config --global rebase.autoStash true
 fi
 
 # Install VSCode
